@@ -1,0 +1,46 @@
+name: 'deel_take_home_exercise'
+version: '1.0.0'
+config-version: 2
+
+profile: 'deel_take_home_exercise'
+
+model-paths: [ "models" ]
+test-paths: [ "tests" ]
+macro-paths: [ "macros" ]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+vars:
+  database: 'dev_thomas'
+  schema: 'deel'
+
+models:
+  deel_take_home_exercise:
+
+    staging:
+      materialized: view
+      +tags:
+        - "staging"
+
+    intermediate:
+      materialized: view
+      +tags:
+        - "intermediate"
+
+    core:
+      materialized: table
+      +tags:
+        - "core"
+
+    finance:
+      materialized: table
+      +tags:
+        - "finance"
+
+    alerts:
+      materialized: table
+      +tags:
+        - "alerts"

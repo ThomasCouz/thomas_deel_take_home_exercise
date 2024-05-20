@@ -1,0 +1,50 @@
+version: 2
+
+models:
+
+  - name: dim_organizations
+
+    description: "Main table that stores all existing organizations"
+    columns:
+      - name: organization_id
+        description: "Unique ID that identifies an organization."
+        tests:
+          - primary_key
+
+      - name: legal_entity_country_code
+        # at this point we would like to display the country name (instead of an ID)
+
+      - name: count_total_contracts_active
+      - name: first_payment_date
+      - name: last_payment_date
+
+      - name: first_invoice_created_at
+      - name: last_invoice_created_at
+
+      - name: total_nb_invoices
+        description: "Total number of created invoices for the organization"
+      - name: total_nb_paid_invoices
+        description: "Total number of paid invoices for the organization"
+      - name: total_invoiced_amount_usd
+        description: "Total amount invoiced for the organization (in USD)"
+
+      - name: nb_invoices_l30d
+        description: "Number of invoices created in the past 30 days for the organization (in UTC timezone)"
+      - name: nb_paid_invoices_l30d
+        description: "Number of paid invoices created in the past 30 days for the organization (in UTC timezone)"
+      - name: invoiced_amount_usd_l30d
+        description: "Amount of invoices created in the past 30 days for the organization (in UTC timezone)"
+
+      - name: last_invoice_id
+        description: "Last invoice created for the organization"
+      - name: last_invoice_status
+        description: "Based on last_invoice_id"
+      - name: last_invoice_payment_method
+        description: "Based on last_invoice_id"
+      - name: last_invoice_amount_usd
+        description: "Based on last_invoice_id"
+
+      - name: current_financial_balance_usd
+        description: "Based on most recent value in model fct_daily_organization_financial_balances"
+
+      - name: created_at

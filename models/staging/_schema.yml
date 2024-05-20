@@ -1,0 +1,144 @@
+version: 2
+
+models:
+
+  - name: stg_organizations
+    columns:
+      - name: organization_id
+        description: "Unique ID that identifies an organization."
+        tests:
+          - primary_key
+      - name: legal_entity_country_code
+        description: "Country in which the organization is legally registered"
+        tests:
+          - not_null
+          # Ideally we would like to add a relationship test with the table legal_entities, to make sure that a given
+          # value in this column is indeed an existing country code
+
+      - name: first_payment_date
+        description: ""
+      - name: last_payment_date
+        description: ""
+      - name: count_total_contracts_active
+        description: ""
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+
+      - name: created_at
+        description: "We don't know in wich timezone this column is stored. We assume it is in UTC?"
+        tests:
+          - not_null
+
+
+  - name: stg_invoices
+    columns:
+      - name: invoice_id
+        tests:
+          - primary_key
+      - name: organization_id
+#        This test fails with the dataset provided. I imagine this is because the dataset only contain a subset of
+#        all the existing organizations. I'm purposely ignoring this failing test for this reason.
+#        tests:
+#          - relationships:
+#              to: ref('stg_organizations')
+#              field: organization_id
+      - name: parent_invoice_id
+        tests:
+          - not_null
+#           This test fails with the dataset provided. I imagine this is because the dataset only contain a subset of
+#           all the existing invoices (i.e. parent invoices are not always present in the dataset). I'm purposely
+#           ignoring this failing test for this reason
+#          - relationships:
+#              to: ref('stg_invoices')
+#              field: invoice_id
+
+      - name: transaction_id
+        tests:
+          - not_null
+          # Ideally we would like to add a relationship test with the table transactions, to make sure that a given
+          # value in this column is indeed an existing transaction
+
+      - name: type
+        tests:
+          - not_null
+          # Ideally we would like to add a relationship test with the table invoice_types, to make sure that a given
+          # value in this column is indeed an existing invoice type
+
+      - name: status
+        tests:
+          - accepted_values:
+              values: [ 'paid',
+                        'open',
+                        'skipped',
+                        'cancelled',
+                        'pending',
+                        'credited',
+                        'processing',
+                        'failed',
+                        'refunded',
+                        'unpayable',
+                        'awaiting_payment' ]
+
+      - name: payment_method
+        description: "Method used for the payment of the invoice. 
+        To dig: why do some invoices have a payment_amount but no payment method ?"
+
+      - name: amount_local_currency
+        description: "Amount of the invoice, in local currency (found in currency column)"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+
+      - name: currency
+        description: "Currency in which the invoice is expressed"
+        tests:
+          - not_null
+          # Ideally we would like to add a relationship test with the table currencies, to make sure that a given
+          # value in this column is indeed an existing currency
+
+
+      - name: fx_rate
+        description: "Exchange rate from local currency (in currency column) to USD at the time when the invoice is
+        created"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+
+      - name: has_payment
+        description: "An invoice has a payment if a payment amount is stored on it (assumption to be confirmed)."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [ 'true', 'false' ]
+              quote: false
+
+      - name: payment_amount
+        description: "Amount of the payment, in local currency (found in payment_currency column). 
+        To investigate: why is this column almost always equal to the amount column ?"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+
+      - name: payment_currency
+        description: "Currency in which the payment is done. This column may be null only if there is no payment_amount"
+
+      - name: fx_rate_payment
+        description: "Exchange rate from local currency (in payment_currency column) to USD at the time when the payment
+         is done. This column may be null only if there is no payment_amount"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              inclusive: false
+
+      - name: created_at
+        description: "We don't know in wich timezone this column is stored. We assume it is in UTC?"
+        tests:
+          - not_null

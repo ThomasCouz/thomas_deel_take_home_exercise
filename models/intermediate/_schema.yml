@@ -1,0 +1,16 @@
+version: 2
+
+models:
+
+  - name: intermediate_organization_invoices_stats
+    description: "Intermediate model that compute invoice stats at the organization level. Used in dim_organizations"
+    columns:
+      - name: organization_id
+        description: "Unique ID that identifies an organization."
+        tests:
+          - primary_key
+
+      - name: last_invoice_id
+        description: "Last invoice created for the organization"
+        tests:
+          - not_null # This test ensures that the join is done correctly

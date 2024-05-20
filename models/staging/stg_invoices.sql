@@ -1,0 +1,17 @@
+select try_to_number(INVOICE_ID)                 as invoice_id,
+       try_to_number(ORGANIZATION_ID)            as organization_id,
+       try_to_number(PARENT_INVOICE_ID)          as parent_invoice_id,
+       try_to_number(TRANSACTION_ID)             as transaction_id,
+       try_to_number(TYPE)                       as type,
+       STATUS,
+       PAYMENT_METHOD,
+       try_to_double(AMOUNT)                     as amount_local_currency,
+       CURRENCY,
+       try_to_double(FX_RATE)                    as fx_rate,
+       round(amount_local_currency / fx_rate, 2) as amount_usd,
+       try_to_double(PAYMENT_AMOUNT) is not null as has_payment,
+       try_to_double(PAYMENT_AMOUNT)             as payment_amount,
+       PAYMENT_CURRENCY,
+       try_to_double(FX_RATE_PAYMENT)            as fx_rate_payment,
+       try_to_timestamp(CREATED_AT)              as created_at
+from {{ source('raw_data_deel', 'raw_invoices') }}

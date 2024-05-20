@@ -1,0 +1,7 @@
+version: 2
+
+models:
+
+  - name: fct_alerts_organization_financial_balance_moves_50_pct
+    description: "Encapsulate the business logic used to be alerted when an organization's financial balance changes
+    by more than 50%. This model is used in the function alert_customer_financial_balance_changes"

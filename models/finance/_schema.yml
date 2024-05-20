@@ -1,0 +1,28 @@
+version: 2
+
+models:
+
+  - name: fct_daily_organization_financial_balances
+    description: "Table that stores the organization's financial balances. 
+    Granularity: 1 line per organization per day, for every day the organization has at least one invoice created.
+    This model is reloaded incrementally with a 48-hour window"
+    columns:
+      - name: surrogate_key
+        description: "Built surrogate key from organization_id and date_day."
+        tests:
+          - primary_key
+
+      - name: organization
+      - name: date_day
+      - name: amount_usd_daily_contribution_financial_balance
+        description: "
+          Organization financial balance from invoices created on selected day only.
+          Invoices in statuses: pending, awaiting_payment, open contribute positively to the financial balance. 
+          Invoices in statuses: credited, refunded contribute negatively to the financial balance. 
+          Other statuses do not contribute to the financial balance."
+      - name: financial_balance_usd
+        description: "
+          Organization overall financial balance on selected day (take into account all invoices created on and before 
+          the selected day"
+        tests:
+          - not_null
